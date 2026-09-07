@@ -15,7 +15,7 @@ public class Consulta {
         this.motivo = motivo;
         this.diagnostico = diagnostico;
         this.tratamiento = tratamiento;
-        this.fecha = LocalDate.now();
+        this.fecha = fecha;
     }
 
     public String getMotivo() {
