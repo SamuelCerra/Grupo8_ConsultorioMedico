@@ -44,16 +44,19 @@ public class ListaSimple<T> implements OperacionesEstructuras<T> {
         if (indice < 0 || indice > tamano) {
             throw new IndexOutOfBoundsException("Indice fuera de rango: " + indice);
         }
+
         if (indice == 0) {
             this.insertarInicio(dato);
             return;
         }
+
         if (indice == tamano) {
             this.insertarFinal(dato);
             return;
         }
 
         Nodo<T> anterior = head;
+
         for (int i = 0; i < indice - 1; i++) {
             anterior = anterior.getSiguiente();
         }
@@ -74,22 +77,28 @@ public class ListaSimple<T> implements OperacionesEstructuras<T> {
         if (indice < 0 || indice >= tamano) {
             throw new IndexOutOfBoundsException("Indice fuera de rango: " + indice);
         }
+
         Nodo<T> actual = head;
+
         for (int i = 0; i < indice; i++) {
             actual = actual.getSiguiente();
         }
+
         return actual.getDato();
     }
 
     @Override
     public T buscarPorValor(T dato) {
         Nodo<T> actual = head;
+
         while (actual != null) {
             if (actual.getDato().equals(dato)) {
                 return actual.getDato();
             }
+
             actual = actual.getSiguiente();
         }
+
         System.out.println("Dato no encontrado");
         return null;
     }
@@ -98,6 +107,7 @@ public class ListaSimple<T> implements OperacionesEstructuras<T> {
         if (estaVacia()) {
             throw new NoSuchElementException("No hay elementos para eliminar");
         }
+
         head = head.getSiguiente();
         tamano--;
     }
@@ -106,15 +116,19 @@ public class ListaSimple<T> implements OperacionesEstructuras<T> {
         if (estaVacia()) {
             throw new NoSuchElementException("No hay elementos para eliminar");
         }
+
         if (head.getSiguiente() == null) {
             head = null;
             tamano--;
             return;
         }
+
         Nodo<T> actual = head;
+
         while (actual.getSiguiente().getSiguiente() != null) {
             actual = actual.getSiguiente();
         }
+
         actual.setSiguiente(null);
         tamano--;
     }
@@ -128,10 +142,13 @@ public class ListaSimple<T> implements OperacionesEstructuras<T> {
         if (indice < 0 || indice >= tamano) {
             throw new IndexOutOfBoundsException("Indice fuera de rango: " + indice);
         }
+
         Nodo<T> datoActual = this.head;
+
         for (int i = 0; i < indice; i++) {
             datoActual = datoActual.getSiguiente();
         }
+
         datoActual.setDato(dato);
     }
 
@@ -140,6 +157,7 @@ public class ListaSimple<T> implements OperacionesEstructuras<T> {
             System.out.println("No hay elementos para eliminar");
             return false;
         }
+
         this.head = this.head.getSiguiente();
         this.tamano--;
         return true;
@@ -150,6 +168,7 @@ public class ListaSimple<T> implements OperacionesEstructuras<T> {
             System.out.println("No hay elementos para eliminar");
             return false;
         }
+
         if (this.head.getSiguiente() == null) {
             this.head = null;
             tamano--;
@@ -157,9 +176,11 @@ public class ListaSimple<T> implements OperacionesEstructuras<T> {
         }
 
         Nodo<T> datoActual = this.head;
+
         while (datoActual.getSiguiente().getSiguiente() != null) {
             datoActual = datoActual.getSiguiente();
         }
+
         datoActual.setSiguiente(null);
         this.tamano--;
         return true;
@@ -170,17 +191,27 @@ public class ListaSimple<T> implements OperacionesEstructuras<T> {
             System.out.println("No hay elementos para eliminar");
             return false;
         }
+
+        if (this.head.getDato().equals(dato)) {
+            this.head = this.head.getSiguiente();
+            this.tamano--;
+            return true;
+        }
+
         Nodo<T> datoAnterior = this.head;
         Nodo<T> datoSiguiente = datoAnterior.getSiguiente();
+
         while (datoSiguiente != null) {
             if (datoSiguiente.getDato().equals(dato)) {
                 datoAnterior.setSiguiente(datoSiguiente.getSiguiente());
                 tamano--;
                 return true;
             }
+
             datoAnterior = datoSiguiente;
             datoSiguiente = datoSiguiente.getSiguiente();
         }
+
         return false;
     }
 

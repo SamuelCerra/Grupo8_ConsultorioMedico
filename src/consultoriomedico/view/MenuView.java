@@ -10,14 +10,17 @@ import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 
 public class MenuView {
+
     private final PacienteService pacienteService = new PacienteService();
     private final CitaService citaService = new CitaService();
 
     public void iniciar() {
         int opcion;
+
         do {
             mostrarMenuPrincipal();
             opcion = ConsoleUtils.leerEntero("Seleccione una opcion: ");
+
             switch (opcion) {
                 case 1 -> menuPaciente();
                 case 2 -> menuCita();
@@ -25,6 +28,7 @@ public class MenuView {
                 case 0 -> System.out.println("Saliendo del sistema...");
                 default -> System.out.println("Opcion invalida.");
             }
+
         } while (opcion != 0);
 
         ConsoleUtils.cerrar();
@@ -38,8 +42,13 @@ public class MenuView {
         System.out.println("0. Salir");
     }
 
+    // =========================
+    // MENU PACIENTES
+    // =========================
+
     private void menuPaciente() {
         int opcion;
+
         do {
             System.out.println("\n--- PACIENTES ---");
             System.out.println("1. Crear paciente");
@@ -49,6 +58,7 @@ public class MenuView {
             System.out.println("5. Eliminar paciente por identificacion");
             System.out.println("6. Listar pacientes");
             System.out.println("0. Volver");
+
             opcion = ConsoleUtils.leerEntero("Seleccione una opcion: ");
 
             switch (opcion) {
@@ -61,38 +71,56 @@ public class MenuView {
                 case 0 -> System.out.println("Volviendo al menu principal...");
                 default -> System.out.println("Opcion invalida.");
             }
+
         } while (opcion != 0);
     }
 
+    // =========================
+    // MENU CITAS
+    // =========================
+
     private void menuCita() {
         int opcion;
+
         do {
             System.out.println("\n--- CITAS ---");
             System.out.println("1. Crear cita");
             System.out.println("2. Listar citas");
+            System.out.println("3. Eliminar cita");
             System.out.println("0. Volver");
+
             opcion = ConsoleUtils.leerEntero("Seleccione una opcion: ");
 
             switch (opcion) {
                 case 1 -> crearCita();
                 case 2 -> citaService.recorrerLista();
+                case 3 -> eliminarCita();
                 case 0 -> System.out.println("Volviendo al menu principal...");
                 default -> System.out.println("Opcion invalida.");
             }
+
         } while (opcion != 0);
     }
 
+    // =========================
+    // MENU CONSULTAS
+    // =========================
+
     private void menuConsulta() {
         int opcion;
+
         do {
             mostrarMenuConsulta();
             opcion = ConsoleUtils.leerEntero("Seleccione una opcion: ");
+
             switch (opcion) {
                 case 1 -> registrarConsulta();
                 case 2 -> mostrarHistorialClinico();
+                case 3 -> eliminarConsulta();
                 case 0 -> System.out.println("Volviendo al menu principal...");
                 default -> System.out.println("Opcion invalida.");
             }
+
         } while (opcion != 0);
     }
 
@@ -100,8 +128,13 @@ public class MenuView {
         System.out.println("\n--- CONSULTAS ---");
         System.out.println("1. Registrar consulta");
         System.out.println("2. Ver historial clinico");
+        System.out.println("3. Eliminar consulta");
         System.out.println("0. Volver");
     }
+
+    // =========================
+    // ACTUALIZAR PACIENTE
+    // =========================
 
     private void mostrarMenuActualizarPaciente() {
         System.out.println("1. Actualizar nombre");
@@ -109,123 +142,418 @@ public class MenuView {
         System.out.println("3. Actualizar direccion");
     }
 
+    // =========================
+    // CREAR PACIENTE
+    // =========================
+
     private void crearPaciente() {
         try {
-            String identificacion = ConsoleUtils.leerTexto("Identificacion: ");
-            String nombre = ConsoleUtils.leerTexto("Nombre: ");
-            String telefono = ConsoleUtils.leerTexto("Telefono: ");
-            String direccion = ConsoleUtils.leerTexto("Direccion: ");
+            String identificacion =
+                    ConsoleUtils.leerTexto("Identificacion: ");
+
+            String nombre =
+                    ConsoleUtils.leerTexto("Nombre: ");
+
+            String telefono =
+                    ConsoleUtils.leerTexto("Telefono: ");
+
+            String direccion =
+                    ConsoleUtils.leerTexto("Direccion: ");
 
             if (identificacion == null || identificacion.isBlank()) {
-                throw new IllegalArgumentException("La identificacion no puede estar vacia.");
+                throw new IllegalArgumentException(
+                        "La identificacion no puede estar vacia."
+                );
             }
 
-            pacienteService.crearPaciente(identificacion, nombre, telefono, direccion);
-            System.out.println("Paciente creado exitosamente.");
+            pacienteService.crearPaciente(
+                    identificacion,
+                    nombre,
+                    telefono,
+                    direccion
+            );
+
+            System.out.println(
+                    "Paciente creado exitosamente."
+            );
+
         } catch (IllegalArgumentException e) {
-            System.out.println("Error: " + e.getMessage());
+            System.out.println(
+                    "Error: " + e.getMessage()
+            );
         }
     }
+
+    // =========================
+    // BUSCAR PACIENTE POR IDENTIFICACION
+    // =========================
 
     private void buscarPacientePorIdentificacion() {
-        String identificacion = ConsoleUtils.leerTexto("Identificacion del paciente: ");
-        Paciente paciente = pacienteService.buscarPorIdentificacion(identificacion);
+        String identificacion =
+                ConsoleUtils.leerTexto(
+                        "Identificacion del paciente: "
+                );
+
+        Paciente paciente =
+                pacienteService.buscarPorIdentificacion(
+                        identificacion
+                );
+
         if (paciente != null) {
-            System.out.println("Paciente encontrado: " + paciente.getNombre());
+            System.out.println(
+                    "Paciente encontrado: "
+                    + paciente.getNombre()
+            );
         } else {
-            System.out.println("Paciente no encontrado.");
+            System.out.println(
+                    "Paciente no encontrado."
+            );
         }
     }
+
+    // =========================
+    // BUSCAR PACIENTE POR INDICE
+    // =========================
 
     private void buscarPacientePorIndice() {
-        int indice = ConsoleUtils.leerEntero("Indice del paciente: ");
-        Paciente paciente = pacienteService.buscarPorIndice(indice);
+        int indice =
+                ConsoleUtils.leerEntero(
+                        "Indice del paciente: "
+                );
+
+        Paciente paciente =
+                pacienteService.buscarPorIndice(indice);
+
         if (paciente != null) {
-            System.out.println("Paciente encontrado: " + paciente.getNombre());
+            System.out.println(
+                    "Paciente encontrado: "
+                    + paciente.getNombre()
+            );
         } else {
-            System.out.println("Paciente no encontrado.");
+            System.out.println(
+                    "Paciente no encontrado."
+            );
         }
     }
 
+    // =========================
+    // ACTUALIZAR PACIENTE
+    // =========================
+
     private void actualizarPacientePorIdentificacion() {
-        String identificacion = ConsoleUtils.leerTexto("Identificacion del paciente a actualizar: ");
-        Paciente paciente = pacienteService.buscarPorIdentificacion(identificacion);
+        String identificacion =
+                ConsoleUtils.leerTexto(
+                        "Identificacion del paciente a actualizar: "
+                );
+
+        Paciente paciente =
+                pacienteService.buscarPorIdentificacion(
+                        identificacion
+                );
+
         if (paciente == null) {
-            System.out.println("Paciente no encontrado.");
+            System.out.println(
+                    "Paciente no encontrado."
+            );
             return;
         }
 
         mostrarMenuActualizarPaciente();
-        int opcion = ConsoleUtils.leerEntero("Seleccione una opcion: ");
+
+        int opcion =
+                ConsoleUtils.leerEntero(
+                        "Seleccione una opcion: "
+                );
+
         switch (opcion) {
+
             case 1 -> pacienteService.actualizarNombrePaciente(
-                    paciente, ConsoleUtils.leerTexto("Nuevo nombre: "));
+                    paciente,
+                    ConsoleUtils.leerTexto(
+                            "Nuevo nombre: "
+                    )
+            );
+
             case 2 -> pacienteService.actualizarTelefonoPaciente(
-                    paciente, ConsoleUtils.leerTexto("Nuevo telefono: "));
+                    paciente,
+                    ConsoleUtils.leerTexto(
+                            "Nuevo telefono: "
+                    )
+            );
+
             case 3 -> pacienteService.actualizarDireccionPaciente(
-                    paciente, ConsoleUtils.leerTexto("Nueva direccion: "));
-            default -> System.out.println("Opcion invalida.");
+                    paciente,
+                    ConsoleUtils.leerTexto(
+                            "Nueva direccion: "
+                    )
+            );
+
+            default ->
+                    System.out.println(
+                            "Opcion invalida."
+                    );
         }
     }
 
+    // =========================
+    // ELIMINAR PACIENTE
+    // =========================
+
     private void eliminarPacientePorIdentificacion() {
-        String identificacion = ConsoleUtils.leerTexto("Identificacion del paciente a eliminar: ");
-        Paciente paciente = pacienteService.buscarPorIdentificacion(identificacion);
+        String identificacion =
+                ConsoleUtils.leerTexto(
+                        "Identificacion del paciente a eliminar: "
+                );
+
+        Paciente paciente =
+                pacienteService.buscarPorIdentificacion(
+                        identificacion
+                );
+
         if (paciente == null) {
-            System.out.println("Paciente no encontrado.");
+            System.out.println(
+                    "Paciente no encontrado."
+            );
             return;
         }
 
         pacienteService.eliminarPaciente(paciente);
     }
 
+    // =========================
+    // CREAR CITA
+    // =========================
+
     private void crearCita() {
         try {
-            String identificacionPaciente = ConsoleUtils.leerTexto("Identificacion del paciente: ");
-            Paciente paciente = pacienteService.buscarPorIdentificacion(identificacionPaciente);
+            String identificacionPaciente =
+                    ConsoleUtils.leerTexto(
+                            "Identificacion del paciente: "
+                    );
+
+            Paciente paciente =
+                    pacienteService.buscarPorIdentificacion(
+                            identificacionPaciente
+                    );
+
             if (paciente == null) {
-                System.out.println("Paciente no encontrado.");
+                System.out.println(
+                        "Paciente no encontrado."
+                );
                 return;
             }
 
-            String identificacionMedico = ConsoleUtils.leerTexto("Identificacion del medico: ");
+            String identificacionMedico =
+                    ConsoleUtils.leerTexto(
+                            "Identificacion del medico: "
+                    );
+
             Medico medico = new Medico(
                     identificacionMedico,
-                    ConsoleUtils.leerTexto("Nombre del medico: "),
-                    ConsoleUtils.leerTexto("Telefono del medico: "),
-                    ConsoleUtils.leerTexto("Especialidad del medico: "),
-                    ConsoleUtils.leerTexto("Numero de registro: ")
+                    ConsoleUtils.leerTexto(
+                            "Nombre del medico: "
+                    ),
+                    ConsoleUtils.leerTexto(
+                            "Telefono del medico: "
+                    ),
+                    ConsoleUtils.leerTexto(
+                            "Especialidad del medico: "
+                    ),
+                    ConsoleUtils.leerTexto(
+                            "Numero de registro: "
+                    )
             );
 
-            LocalDate fecha = LocalDate.parse(ConsoleUtils.leerTexto("Fecha (AAAA-MM-DD): "));
-            String hora = ConsoleUtils.leerTexto("Hora de la cita: ");
-            String motivo = ConsoleUtils.leerTexto("Motivo de la cita: ");
+            LocalDate fecha =
+                    LocalDate.parse(
+                            ConsoleUtils.leerTexto(
+                                    "Fecha (AAAA-MM-DD): "
+                            )
+                    );
 
-            Cita cita = citaService.crearCita(fecha, hora, motivo, paciente, medico);
-            System.out.println("Cita creada exitosamente para " + cita.getPaciente().getNombre());
+            String hora =
+                    ConsoleUtils.leerTexto(
+                            "Hora de la cita: "
+                    );
+
+            String motivo =
+                    ConsoleUtils.leerTexto(
+                            "Motivo de la cita: "
+                    );
+
+            Cita cita =
+                    citaService.crearCita(
+                            fecha,
+                            hora,
+                            motivo,
+                            paciente,
+                            medico
+                    );
+
+            System.out.println(
+                    "Cita creada exitosamente para "
+                    + cita.getPaciente().getNombre()
+            );
+
         } catch (DateTimeParseException e) {
-            System.out.println("Error: la fecha debe tener el formato AAAA-MM-DD.");
+
+            System.out.println(
+                    "Error: la fecha debe tener el formato AAAA-MM-DD."
+            );
+
         } catch (IllegalArgumentException e) {
-            System.out.println("Error: " + e.getMessage());
+
+            System.out.println(
+                    "Error: " + e.getMessage()
+            );
         }
     }
+
+    // =========================
+    // ELIMINAR CITA
+    // =========================
+
+    private void eliminarCita() {
+        String identificacionPaciente =
+                ConsoleUtils.leerTexto(
+                        "Identificacion del paciente: "
+                );
+
+        Paciente paciente =
+                pacienteService.buscarPorIdentificacion(
+                        identificacionPaciente
+                );
+
+        if (paciente == null) {
+            System.out.println(
+                    "Paciente no encontrado."
+            );
+            return;
+        }
+
+        try {
+            LocalDate fecha =
+                    LocalDate.parse(
+                            ConsoleUtils.leerTexto(
+                                    "Fecha de la cita (AAAA-MM-DD): "
+                            )
+                    );
+
+            Cita cita =
+                    citaService.buscarPorPacienteYFecha(
+                            paciente,
+                            fecha
+                    );
+
+            if (cita == null) {
+                System.out.println(
+                        "Cita no encontrada."
+                );
+                return;
+            }
+
+            citaService.eliminarCita(cita);
+
+        } catch (DateTimeParseException e) {
+
+            System.out.println(
+                    "Error: la fecha debe tener el formato AAAA-MM-DD."
+            );
+        }
+    }
+
+    // =========================
+    // REGISTRAR CONSULTA
+    // =========================
 
     private void registrarConsulta() {
         try {
-            String identificacionPaciente = ConsoleUtils.leerTexto("Identificacion del paciente: ");
-            String motivo = ConsoleUtils.leerTexto("Motivo de la consulta: ");
-            String diagnostico = ConsoleUtils.leerTexto("Diagnostico: ");
-            String tratamiento = ConsoleUtils.leerTexto("Tratamiento: ");
-            LocalDate fecha = LocalDate.parse(ConsoleUtils.leerTexto("Fecha (AAAA-MM-DD): "));
+            String identificacionPaciente =
+                    ConsoleUtils.leerTexto(
+                            "Identificacion del paciente: "
+                    );
 
-            pacienteService.crearConsulta(identificacionPaciente, motivo, diagnostico, tratamiento, fecha);
+            String motivo =
+                    ConsoleUtils.leerTexto(
+                            "Motivo de la consulta: "
+                    );
+
+            String diagnostico =
+                    ConsoleUtils.leerTexto(
+                            "Diagnostico: "
+                    );
+
+            String tratamiento =
+                    ConsoleUtils.leerTexto(
+                            "Tratamiento: "
+                    );
+
+            LocalDate fecha =
+                    LocalDate.parse(
+                            ConsoleUtils.leerTexto(
+                                    "Fecha (AAAA-MM-DD): "
+                            )
+                    );
+
+            pacienteService.crearConsulta(
+                    identificacionPaciente,
+                    motivo,
+                    diagnostico,
+                    tratamiento,
+                    fecha
+            );
+
         } catch (DateTimeParseException e) {
-            System.out.println("Error: la fecha debe tener el formato AAAA-MM-DD.");
+
+            System.out.println(
+                    "Error: la fecha debe tener el formato AAAA-MM-DD."
+            );
         }
     }
 
+    // =========================
+    // MOSTRAR HISTORIAL
+    // =========================
+
     private void mostrarHistorialClinico() {
-        String identificacionPaciente = ConsoleUtils.leerTexto("Identificacion del paciente: ");
-        pacienteService.mostrarHistorialClinico(identificacionPaciente);
+        String identificacionPaciente =
+                ConsoleUtils.leerTexto(
+                        "Identificacion del paciente: "
+                );
+
+        pacienteService.mostrarHistorialClinico(
+                identificacionPaciente
+        );
+    }
+
+    // =========================
+    // ELIMINAR CONSULTA
+    // =========================
+
+    private void eliminarConsulta() {
+        String identificacionPaciente =
+                ConsoleUtils.leerTexto(
+                        "Identificacion del paciente: "
+                );
+
+        try {
+            LocalDate fecha =
+                    LocalDate.parse(
+                            ConsoleUtils.leerTexto(
+                                    "Fecha de la consulta (AAAA-MM-DD): "
+                            )
+                    );
+
+            pacienteService.eliminarConsulta(
+                    identificacionPaciente,
+                    fecha
+            );
+
+        } catch (DateTimeParseException e) {
+
+            System.out.println(
+                    "Error: la fecha debe tener el formato AAAA-MM-DD."
+            );
+        }
     }
 }

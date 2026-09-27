@@ -25,21 +25,49 @@ public class CitaService {
 
     public Cita buscarPorPacienteYFecha(Paciente paciente, LocalDate fecha) {
         Nodo<Cita> actual = citas.getHead();
+
         while (actual != null) {
-            if (actual.getDato().getPaciente().equals(paciente) && actual.getDato().getFecha().equals(fecha)) {
+            if (actual.getDato().getPaciente().equals(paciente)
+                    && actual.getDato().getFecha().equals(fecha)) {
                 return actual.getDato();
             }
+
             actual = actual.getSiguiente();
         }
+
         return null;
     }
 
     public void recorrerLista() {
         Nodo<Cita> actual = citas.getHead();
+
         for (int i = 0; i < citas.getTamano(); i++) {
             Cita citaActual = actual.getDato();
-            System.out.println("Indice: " + i + " Cita: " + citaActual.getFecha() + " - " + citaActual.getPaciente().getNombre());
+
+            System.out.println(
+                    "Indice: " + i
+                    + " Cita: " + citaActual.getFecha()
+                    + " - " + citaActual.getPaciente().getNombre()
+            );
+
             actual = actual.getSiguiente();
         }
+    }
+
+    public boolean eliminarCita(Cita cita) {
+        if (cita == null) {
+            System.out.println("Cita no encontrada.");
+            return false;
+        }
+
+        boolean eliminado = citas.eliminarPorValor(cita);
+
+        if (eliminado) {
+            System.out.println("Cita eliminada exitosamente.");
+            return true;
+        }
+
+        System.out.println("Error al eliminar la cita.");
+        return false;
     }
 }
