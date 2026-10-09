@@ -1,3 +1,4 @@
+
 package consultoriomedico.services;
 
 import consultoriomedico.models.Consulta;
@@ -7,12 +8,21 @@ import consultoriomedico.structures.Nodo;
 import java.time.LocalDate;
 
 public class PacienteService {
+
     private ListaSimple<Paciente> pacientes = new ListaSimple<>();
 
-    public Paciente crearPaciente(String identificacion, String nombre, String telefono, String direccion) {
-        Paciente paciente = new Paciente(identificacion, nombre, telefono);
+    public Paciente crearPaciente(
+            String identificacion,
+            String nombre,
+            String telefono,
+            String direccion) {
+
+        Paciente paciente =
+                new Paciente(identificacion, nombre, telefono);
+
         paciente.setDireccion(direccion);
         pacientes.insertarFinal(paciente);
+
         return paciente;
     }
 
@@ -20,7 +30,8 @@ public class PacienteService {
         Nodo<Paciente> pacienteActual = pacientes.getHead();
 
         while (pacienteActual != null) {
-            if (pacienteActual.getDato().getIdentificacion().equals(identificacion)) {
+            if (pacienteActual.getDato()
+                    .getIdentificacion().equals(identificacion)) {
                 return pacienteActual.getDato();
             }
 
@@ -60,7 +71,8 @@ public class PacienteService {
             String tratamiento,
             LocalDate fecha) {
 
-        Paciente paciente = buscarPorIdentificacion(identificacionPaciente);
+        Paciente paciente =
+                buscarPorIdentificacion(identificacionPaciente);
 
         if (paciente == null) {
             System.out.println("Paciente no encontrado.");
@@ -70,6 +82,7 @@ public class PacienteService {
         Consulta consulta = new Consulta(
                 motivo,
                 diagnostico,
+                tratamiento,
                 fecha
         );
 
@@ -83,8 +96,11 @@ public class PacienteService {
         return consulta;
     }
 
-    public void mostrarHistorialClinico(String identificacionPaciente) {
-        Paciente paciente = buscarPorIdentificacion(identificacionPaciente);
+    public void mostrarHistorialClinico(
+            String identificacionPaciente) {
+
+        Paciente paciente =
+                buscarPorIdentificacion(identificacionPaciente);
 
         if (paciente == null) {
             System.out.println("Paciente no encontrado.");
@@ -96,23 +112,23 @@ public class PacienteService {
 
         if (actual == null) {
             System.out.println(
-                    "El paciente no tiene historial clínico."
+                    "El paciente no tiene historial clinico."
             );
             return;
         }
 
         System.out.println(
-                "Historial clínico de " + paciente.getNombre()
+                "Historial clinico de " + paciente.getNombre()
         );
 
-        for (int i = 0;
-             i < paciente.getHistorialClinico().getTamano();
-             i++) {
+        int i = 1;
 
-            System.out.println("\nConsulta " + (i + 1));
+        while (actual != null) {
+            System.out.println("\nConsulta " + i);
             System.out.println(actual.getDato());
 
             actual = actual.getSiguiente();
+            i++;
         }
     }
 
@@ -131,7 +147,6 @@ public class PacienteService {
                 paciente.getHistorialClinico().getHead();
 
         while (actual != null) {
-
             Consulta consulta = actual.getDato();
 
             if (consulta.getFecha().equals(fecha)) {
@@ -142,7 +157,7 @@ public class PacienteService {
         }
 
         return null;
-    }
+        }
 
     public boolean eliminarConsulta(
             String identificacionPaciente,
@@ -157,10 +172,7 @@ public class PacienteService {
         }
 
         Consulta consulta =
-                buscarConsulta(
-                        identificacionPaciente,
-                        fecha
-                );
+                buscarConsulta(identificacionPaciente, fecha);
 
         if (consulta == null) {
             System.out.println("Consulta no encontrada.");
@@ -178,10 +190,7 @@ public class PacienteService {
             return true;
         }
 
-        System.out.println(
-                "Error al eliminar la consulta."
-        );
-
+        System.out.println("Error al eliminar la consulta.");
         return false;
     }
 
@@ -230,8 +239,7 @@ public class PacienteService {
     public boolean eliminarPaciente(Paciente paciente) {
 
         if (paciente != null) {
-            boolean eliminado =
-                    pacientes.eliminar(paciente);
+            boolean eliminado = pacientes.eliminar(paciente);
 
             if (eliminado) {
                 System.out.println(
@@ -240,10 +248,7 @@ public class PacienteService {
                 return true;
             }
 
-            System.out.println(
-                    "Error al eliminar el paciente."
-            );
-
+            System.out.println("Error al eliminar el paciente.");
             return false;
         }
 

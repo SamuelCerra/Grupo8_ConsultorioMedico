@@ -54,20 +54,31 @@ public class CitaService {
         }
     }
 
-    public boolean eliminarCita(Cita cita) {
-        if (cita == null) {
-            System.out.println("Cita no encontrada.");
-            return false;
-        }
+ public boolean eliminarCita(Cita cita) {
+if (cita == null) {
+System.out.println("Cita no encontrada.");
+return false;
+}
 
-        boolean eliminado = citas.eliminarPorValor(cita);
+boolean eliminado = citas.eliminarPorValor(cita);
 
-        if (eliminado) {
-            System.out.println("Cita eliminada exitosamente.");
-            return true;
-        }
+if (eliminado) {
+Paciente paciente = cita.getPaciente();
+Medico medico = cita.getMedico();
 
-        System.out.println("Error al eliminar la cita.");
-        return false;
-    }
+if (paciente != null) {
+paciente.getCitas().eliminarPorValor(cita);
+}
+
+if (medico != null) {
+medico.getCitas().eliminarPorValor(cita);
+}
+
+System.out.println("Cita eliminada exitosamente.");
+return true;
+}
+
+System.out.println("Error al eliminar la cita.");
+return false;
+}
 }
