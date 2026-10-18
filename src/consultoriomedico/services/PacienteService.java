@@ -1,6 +1,7 @@
 
 package consultoriomedico.services;
 
+import consultoriomedico.structures.Pila;
 import consultoriomedico.models.Consulta;
 import consultoriomedico.models.Paciente;
 import consultoriomedico.structures.ListaSimple;
@@ -87,6 +88,7 @@ public class PacienteService {
         );
 
         paciente.agregarConsulta(consulta);
+        paciente.getPilaConsultas().push(consulta);
 
         System.out.println(
                 "Consulta registrada exitosamente para "
@@ -94,6 +96,106 @@ public class PacienteService {
         );
 
         return consulta;
+    }
+    
+    public Consulta deshacerUltimaConsulta(
+            String identificacionPaciente) {
+
+        Paciente paciente =
+                buscarPorIdentificacion(identificacionPaciente);
+
+        if (paciente == null) {
+            return null;
+        }
+
+        Pila<Consulta> pila = paciente.getPilaConsultas();
+
+        if (pila.isEmpty()) {
+            return null;
+        }
+
+        Consulta consulta = pila.pop();
+
+        paciente.getHistorialClinico()
+                .eliminarPorValor(consulta);
+
+        return consulta;
+    }
+
+    public Consulta consultarUltimaConsulta(
+            String identificacionPaciente) {
+
+        Paciente paciente =
+                buscarPorIdentificacion(identificacionPaciente);
+
+        if (paciente == null
+                || paciente.getPilaConsultas().isEmpty()) {
+            return null;
+        }
+
+        return paciente.getPilaConsultas().peek();
+    }
+
+    public boolean sinOperacionesPorDeshacer(
+            String identificacionPaciente) {
+
+        Paciente paciente =
+                buscarPorIdentificacion(identificacionPaciente);
+
+        return paciente == null
+                || paciente.getPilaConsultas().isEmpty();
+    }
+
+    public int contarOperaciones(
+            String identificacionPaciente) {
+
+        Paciente paciente =
+                buscarPorIdentificacion(identificacionPaciente);
+
+        if (paciente == null) {
+            return 0;
+        }
+
+        return paciente.getPilaConsultas().size();
+    }
+
+    public String listarOperaciones(
+            String identificacionPaciente) {
+
+        Paciente paciente =
+                buscarPorIdentificacion(identificacionPaciente);
+
+        if (paciente == null) {
+            return "Paciente no encontrado.";
+        }
+
+        Pila<Consulta> pila = paciente.getPilaConsultas();
+
+        if (pila.isEmpty()) {
+            return "No hay operaciones por deshacer";
+        }
+
+        Pila<Consulta> auxiliar = new Pila<>();
+        StringBuilder resultado = new StringBuilder();
+        int numero = 1;
+
+        while (!pila.isEmpty()) {
+            Consulta consulta = pila.pop();
+
+            resultado.append("Consulta ")
+                    .append(numero++)
+                    .append("\n")
+                    .append(consulta)
+                    .append("\n\n");
+
+            auxiliar.push(consulta);
+        }
+
+        while (!auxiliar.isEmpty()) {
+            pila.push(auxiliar.pop());
+        }
+
+        return resultado.toString().trim();
     }
 
     public void mostrarHistorialClinico(
@@ -159,6 +261,7 @@ public class PacienteService {
         return null;
         }
 
+    
     public boolean eliminarConsulta(
             String identificacionPaciente,
             LocalDate fecha) {
@@ -184,6 +287,24 @@ public class PacienteService {
                         .eliminarPorValor(consulta);
 
         if (eliminado) {
+
+            Pila<Consulta> pila =
+                    paciente.getPilaConsultas();
+
+            Pila<Consulta> auxiliar = new Pila<>();
+
+            while (!pila.isEmpty()) {
+                Consulta actual = pila.pop();
+
+                if (actual != consulta) {
+                    auxiliar.push(actual);
+                }
+            }
+
+            while (!auxiliar.isEmpty()) {
+                pila.push(auxiliar.pop());
+            }
+
             System.out.println(
                     "Consulta eliminada exitosamente."
             );
