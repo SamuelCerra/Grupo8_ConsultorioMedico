@@ -1,27 +1,28 @@
+
 package consultoriomedico.models;
 
 import consultoriomedico.structures.ListaSimple;
+import consultoriomedico.structures.Pila;
 
 public class Paciente extends Persona {
-    private ListaSimple<Cita> citas;
-    private ListaSimple<Consulta> historialClinico;
+
+    private final ListaSimple<Consulta> historialClinico;
+    private final Pila<Consulta> pilaConsultas;
     private String direccion = "";
 
-    public Paciente(String identificacion, String nombre, String telefono) {
+    public Paciente(
+            String identificacion,
+            String nombre,
+            String telefono) {
+
         super(identificacion, nombre, telefono);
-        this.citas = new ListaSimple<>();
         this.historialClinico = new ListaSimple<>();
+        this.pilaConsultas = new Pila<>();
     }
 
     @Override
     public String rolEnConsulta() {
-        return "Paciente ";
-    }
-
-    public void agregarCita(Cita cita) {
-        if (cita != null) {
-            citas.insertarFinal(cita);
-        }
+        return "Paciente";
     }
 
     public void agregarConsulta(Consulta consulta) {
@@ -30,12 +31,12 @@ public class Paciente extends Persona {
         }
     }
 
-    public ListaSimple<Cita> getCitas() {
-        return citas;
-    }
-
     public ListaSimple<Consulta> getHistorialClinico() {
         return historialClinico;
+    }
+
+    public Pila<Consulta> getPilaConsultas() {
+        return pilaConsultas;
     }
 
     public String getDireccion() {
