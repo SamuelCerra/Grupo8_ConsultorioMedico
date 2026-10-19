@@ -2,14 +2,12 @@
 package consultoriomedico.view;
 
 import consultoriomedico.models.Cita;
-import consultoriomedico.models.Consulta;
 import consultoriomedico.models.Medico;
 import consultoriomedico.models.Paciente;
 import consultoriomedico.services.CitaService;
-import consultoriomedico.services.PacienteService;
 import consultoriomedico.services.MedicoService;
+import consultoriomedico.services.PacienteService;
 import consultoriomedico.utils.ConsoleUtils;
-
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 
@@ -42,7 +40,11 @@ public class MenuView {
                 case 2 -> menuMedico();
                 case 3 -> menuCita();
                 case 4 -> menuConsulta();
-                case 5 -> menuPilaView.iniciar();//{ MenuColaView  menuPila = new MenuPilaVIew(pacienteService);menuCola.iniciar();}
+                case 5 -> menuPilaView.iniciar();
+                case 6 -> {
+                    MenuColaView menuCola = new MenuColaView(pacienteService);
+                    menuCola.iniciar();
+                }
                 case 0 -> System.out.println(
                         "Saliendo del sistema...");
                 default -> System.out.println(
@@ -61,6 +63,7 @@ public class MenuView {
         System.out.println("3. Citas");
         System.out.println("4. Consultas");
         System.out.println("5. Historial de consultas");
+        System.out.println("6. Sala de espera");
         System.out.println("0. Salir");
         }
 

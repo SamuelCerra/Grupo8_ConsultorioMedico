@@ -1,16 +1,19 @@
 
 package consultoriomedico.services;
 
-import consultoriomedico.structures.Pila;
 import consultoriomedico.models.Consulta;
 import consultoriomedico.models.Paciente;
+import consultoriomedico.models.SalaDeEspera;
+import consultoriomedico.structures.Cola;
 import consultoriomedico.structures.ListaSimple;
 import consultoriomedico.structures.Nodo;
+import consultoriomedico.structures.Pila;
 import java.time.LocalDate;
 
 public class PacienteService {
 
     private ListaSimple<Paciente> pacientes = new ListaSimple<>();
+    private final SalaDeEspera salaDeEspera = new SalaDeEspera("Sala de espera 1");
 
     public Paciente crearPaciente(
             String identificacion,
@@ -313,6 +316,58 @@ public class PacienteService {
 
         System.out.println("Error al eliminar la consulta.");
         return false;
+    }
+
+    public String listarEnEspera() {
+        Cola<Paciente> fila = salaDeEspera.getFila();
+
+
+        if (fila.isEmpty()) {
+            return "No hay pacientes en espera.";
+        }
+
+        StringBuilder sb = new StringBuilder("--- PACIENTES EN ESPERA ---");
+        int total = fila.size();
+
+        for (int i = 1; i <= total; i++) {
+            Paciente paciente = fila.dequeue();
+            sb.append("\n").append(i).append(". ")
+              .append(paciente.getNombre())
+              .append(" (ID: ").append(paciente.getIdentificacion()).append(")");
+            fila.enqueue(paciente); 
+        }
+        return sb.toString();
+    }
+
+    public void registrarLLegada(String identificacion){
+        Paciente paciente = buscarPacienteOFallar(identificacion);
+        salaDeEspera.getFila().enqueue(paciente);
+    }
+
+    public Paciente atenderSiguiente(){
+        Paciente paciente =  salaDeEspera.getFila().dequeue();
+        return paciente;
+    }
+
+    public Paciente consultarSiguiente(){
+        Paciente paciente = salaDeEspera.getFila().front();
+        return paciente;
+    }
+
+    public boolean sinClientesEnEspera(){
+        return salaDeEspera.getFila().isEmpty();
+    }
+
+    public int contarEnEspera(){
+        return salaDeEspera.getFila().size();
+    }
+
+    private Paciente buscarPacienteOFallar(String identificacion){
+        Paciente paciente = buscarPorIdentificacion(identificacion);
+        if (paciente == null) {
+            throw new IllegalArgumentException( "Paciente no encontrado.");
+        }
+        return paciente;
     }
 
     public void actualizarNombrePaciente(
