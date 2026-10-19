@@ -339,10 +339,13 @@ public class PacienteService {
         return sb.toString();
     }
 
-    public void registrarLLegada(String identificacion){
-        Paciente paciente = buscarPacienteOFallar(identificacion);
+    public void registrarLLegada(String identificacion) {
+    Paciente paciente = buscarPorIdentificacion(identificacion);
+    
+    if (paciente != null) {
         salaDeEspera.getFila().enqueue(paciente);
     }
+}
 
     public Paciente atenderSiguiente(){
         Paciente paciente =  salaDeEspera.getFila().dequeue();

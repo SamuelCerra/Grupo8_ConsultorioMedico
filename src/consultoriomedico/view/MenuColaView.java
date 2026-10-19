@@ -30,21 +30,29 @@ public class MenuColaView {
     }
 
     private void mostrarOpciones() {
-        System.out.println("\n--- GESTIÓN DE SALA DE ESPERA (COLA) ---");
-        System.out.println("1. Registrar llegada de paciente (enqueue)");
-        System.out.println("2. Atender al siguiente paciente (dequeue)");
-        System.out.println("3. Ver quién sigue en la fila (front)");
-        System.out.println("4. ¿Hay pacientes en espera? (isEmpty)");
-        System.out.println("5. Cantidad de pacientes en espera (size)");
-        System.out.println("6. Listar la fila completa (Parte 7)");
+        System.out.println("\n--- GESTIÓN DE SALA DE ESPERA ---");
+        System.out.println("1. Registrar llegada de paciente ");
+        System.out.println("2. Atender al siguiente paciente ");
+        System.out.println("3. Ver quién sigue en la fila ");
+        System.out.println("4. ¿Hay pacientes en espera? ");
+        System.out.println("5. Cantidad de pacientes en espera ");
+        System.out.println("6. Listar la fila completa ");
         System.out.println("0. Volver al menú principal");
     }
 
     private void registrarLlegada() {
-        String identificacion = ConsoleUtils.leerTexto("Identificación del paciente: ");
-        pacienteService.registrarLLegada(identificacion);
-        System.out.println("¡Paciente registrado exitosamente en la sala de espera!");
+    String identificacion = ConsoleUtils.leerTexto("Identificación del paciente: ");
+    
+    Paciente paciente = pacienteService.buscarPorIdentificacion(identificacion);
+    
+    if (paciente == null) {
+        System.out.println("Error: No existe un paciente registrado con esa identificación.");
+        return;
     }
+    
+    pacienteService.registrarLLegada(identificacion);
+    System.out.println("¡Paciente registrado exitosamente en la sala de espera!");
+}
 
     private void atender() {
         if (pacienteService.sinClientesEnEspera()) {
@@ -78,6 +86,8 @@ public class MenuColaView {
     }
 
     private void listar() {
-        System.out.println("La función de listar la fila se implementará en la Parte 7.");
+    String identificacion = ConsoleUtils.leerTexto("Identificación del paciente: ");
+    String resultado = pacienteService.listarOperaciones(identificacion);
+    System.out.println(resultado);
     }
 }
