@@ -25,6 +25,9 @@ public class MenuView {
         private final MedicoService medicoService =
                 new MedicoService(citaService);
 
+        private final MenuPilaView menuPilaView =
+        new MenuPilaView(pacienteService);
+
  
     public void iniciar() {
         int opcion;
@@ -39,7 +42,7 @@ public class MenuView {
                 case 2 -> menuMedico();
                 case 3 -> menuCita();
                 case 4 -> menuConsulta();
-                case 5 -> menuPilaConsultas();
+                case 5 -> menuPilaView.iniciar();//{ MenuColaView  menuPila = new MenuPilaVIew(pacienteService);menuCola.iniciar();}
                 case 0 -> System.out.println(
                         "Saliendo del sistema...");
                 default -> System.out.println(
@@ -594,136 +597,4 @@ public class MenuView {
     // MENU HISTORIAL DE CONSULTAS
     // =========================
 
-    private void menuPilaConsultas() {
-        int opcion;
-
-        do {
-            System.out.println("\n--- HISTORIAL DE CONSULTAS ---");
-            System.out.println("1. Registrar consulta");
-            System.out.println("2. Deshacer ultima consulta");
-            System.out.println("3. Ver ultima consulta");
-            System.out.println("4. Verificar si hay consultas por eliminar");
-            System.out.println("5. Contar consultas por eliminar");
-            System.out.println("6. Listar consultas por eliminar");
-            System.out.println("0. Volver");
-
-            opcion = ConsoleUtils.leerEntero(
-                    "Seleccione una opcion: ");
-
-            switch (opcion) {
-                case 1 -> registrarConsulta();
-                case 2 -> deshacerUltimaConsulta();
-                case 3 -> verUltimaConsulta();
-                case 4 -> verificarPilaConsultas();
-                case 5 -> contarConsultasPila();
-                case 6 -> listarConsultasPila();
-                case 0 -> System.out.println(
-                        "Volviendo al menu principal...");
-                default -> System.out.println("Opcion invalida.");
-            }
-
-        } while (opcion != 0);
-    }
-
-    // =========================
-    // ELIMINAR ULTIMA CONSULTA
-    // =========================
-
-    private void deshacerUltimaConsulta() {
-        String identificacion =
-                ConsoleUtils.leerTexto(
-                        "Identificacion del paciente: ");
-
-        if (pacienteService.sinOperacionesPorDeshacer(
-                identificacion)) {
-            System.out.println("No hay operaciones por deshacer");
-            return;
-        }
-
-        Consulta consulta =
-                pacienteService.deshacerUltimaConsulta(
-                        identificacion);
-
-        if (consulta != null) {
-            System.out.println(
-                    "Se deshizo la ultima consulta:");
-            System.out.println(consulta);
-        }
-    }
-
-    // =========================
-    // VER ULTIMA CONSULTA
-    // =========================
-
-    private void verUltimaConsulta() {
-        String identificacion =
-                ConsoleUtils.leerTexto(
-                        "Identificacion del paciente: ");
-
-        if (pacienteService.sinOperacionesPorDeshacer(
-                identificacion)) {
-            System.out.println("No hay operaciones por deshacer");
-            return;
-        }
-
-        Consulta consulta =
-                pacienteService.consultarUltimaConsulta(
-                        identificacion);
-
-        if (consulta != null) {
-            System.out.println("Ultima consulta registrada:");
-            System.out.println(consulta);
-        }
-    }
-
-    // =========================
-    // VERIFICAR PILA
-    // =========================
-
-    private void verificarPilaConsultas() {
-        String identificacion =
-                ConsoleUtils.leerTexto(
-                        "Identificacion del paciente: ");
-
-        if (pacienteService.sinOperacionesPorDeshacer(
-                identificacion)) {
-            System.out.println("No hay operaciones por deshacer");
-        } else {
-            System.out.println(
-                    "Hay consultas por deshacer.");
-        }
-    }
-
-    // =========================
-    // CONTAR CONSULTAS
-    // =========================
-
-    private void contarConsultasPila() {
-        String identificacion =
-                ConsoleUtils.leerTexto(
-                        "Identificacion del paciente: ");
-
-        int cantidad =
-                pacienteService.contarOperaciones(
-                        identificacion);
-
-        System.out.println(
-                "Consultas en la pila: " + cantidad);
-    }
-
-    // =========================
-    // LISTAR CONSULTAS
-    // =========================
-
-    private void listarConsultasPila() {
-        String identificacion =
-                ConsoleUtils.leerTexto(
-                        "Identificacion del paciente: ");
-
-        String resultado =
-                pacienteService.listarOperaciones(
-                        identificacion);
-
-        System.out.println(resultado);
-    }
 }
