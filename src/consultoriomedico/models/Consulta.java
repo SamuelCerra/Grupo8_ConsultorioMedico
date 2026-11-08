@@ -10,10 +10,10 @@ public class Consulta {
 
     public Consulta(String motivo, String diagnostico,
                     String tratamiento, LocalDate fecha) {
-        this.motivo = motivo;
-        this.diagnostico = diagnostico;
-        this.tratamiento = tratamiento;
-        this.fecha = fecha;
+        setMotivo(motivo);
+        setDiagnostico(diagnostico);
+        setTratamiento(tratamiento);
+        setFecha(fecha);
     }
 
     public String getMotivo() {
@@ -21,7 +21,10 @@ public class Consulta {
     }
 
     public void setMotivo(String motivo) {
-        this.motivo = motivo;
+        if (motivo == null || motivo.isBlank()) {
+            throw new IllegalArgumentException("El motivo no puede ser nulo ni vacío");
+        }
+        this.motivo = motivo.trim();
     }
 
     public String getDiagnostico() {
@@ -29,7 +32,10 @@ public class Consulta {
     }
 
     public void setDiagnostico(String diagnostico) {
-        this.diagnostico = diagnostico;
+        if (diagnostico == null || diagnostico.isBlank()) {
+            throw new IllegalArgumentException("El diagnóstico no puede ser nulo ni vacío");
+        }
+        this.diagnostico = diagnostico.trim();
     }
 
     public String getTratamiento() {
@@ -37,7 +43,10 @@ public class Consulta {
     }
 
     public void setTratamiento(String tratamiento) {
-        this.tratamiento = tratamiento;
+        if (tratamiento == null || tratamiento.isBlank()) {
+            throw new IllegalArgumentException("El tratamiento no puede ser nulo ni vacío");
+        }
+        this.tratamiento = tratamiento.trim();
     }
 
     public LocalDate getFecha() {
@@ -45,6 +54,9 @@ public class Consulta {
     }
 
     public void setFecha(LocalDate fecha) {
+        if (fecha == null) {
+            throw new IllegalArgumentException("La fecha no puede ser nula");
+        }
         this.fecha = fecha;
     }
 

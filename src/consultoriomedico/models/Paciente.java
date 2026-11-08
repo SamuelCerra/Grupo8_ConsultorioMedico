@@ -44,6 +44,6 @@ public class Paciente extends Persona {
     }
 
     public void setDireccion(String direccion) {
-        this.direccion = direccion;
+        this.direccion = direccion == null ? "" : direccion.trim();
     }
 }
