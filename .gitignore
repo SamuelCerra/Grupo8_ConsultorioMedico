@@ -130,4 +130,7 @@ $RECYCLE.BIN/
 # Windows shortcuts
 *.lnk
 
+# Archivos locales de persistencia
+data/*.txt
+
 # End of https://www.toptal.com/developers/gitignore/api/windows,linux,macos,java,vi
