@@ -1,6 +1,15 @@
 
 package consultoriomedico.services;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.time.LocalDate;
+
 import consultoriomedico.models.Consulta;
 import consultoriomedico.models.Paciente;
 import consultoriomedico.models.SalaDeEspera;
@@ -8,12 +17,19 @@ import consultoriomedico.structures.Cola;
 import consultoriomedico.structures.ListaSimple;
 import consultoriomedico.structures.Nodo;
 import consultoriomedico.structures.Pila;
-import java.time.LocalDate;
 
 public class PacienteService {
 
+    private static final String RUTA_ARCHIVO = "data/pacientes.txt";
+
     private ListaSimple<Paciente> pacientes = new ListaSimple<>();
-    private final SalaDeEspera salaDeEspera = new SalaDeEspera("Sala de espera 1");
+
+    private final SalaDeEspera salaDeEspera =
+            new SalaDeEspera("Sala de espera 1");
+
+    public PacienteService() {
+        cargarPacientes();
+    }
 
     public Paciente crearPaciente(
             String identificacion,
@@ -21,21 +37,35 @@ public class PacienteService {
             String telefono,
             String direccion) {
 
+        if (buscarPorIdentificacion(identificacion) != null) {
+            throw new IllegalArgumentException(
+                    "Ya existe un paciente con esa identificación.");
+        }
+
         Paciente paciente =
                 new Paciente(identificacion, nombre, telefono);
 
         paciente.setDireccion(direccion);
         pacientes.insertarFinal(paciente);
 
+        guardarPacientes();
+
         return paciente;
     }
 
     public Paciente buscarPorIdentificacion(String identificacion) {
+
+        if (identificacion == null) {
+            return null;
+        }
+
         Nodo<Paciente> pacienteActual = pacientes.getHead();
 
         while (pacienteActual != null) {
+
             if (pacienteActual.getDato()
                     .getIdentificacion().equals(identificacion)) {
+
                 return pacienteActual.getDato();
             }
 
@@ -46,6 +76,7 @@ public class PacienteService {
     }
 
     public Paciente buscarPorIndice(int indice) {
+
         if (indice < 0 || indice >= pacientes.getTamano()) {
             return null;
         }
@@ -54,9 +85,11 @@ public class PacienteService {
     }
 
     public void recorrerLista() {
+
         Nodo<Paciente> actual = pacientes.getHead();
 
         for (int i = 0; i < pacientes.getTamano(); i++) {
+
             Paciente pacienteActual = actual.getDato();
 
             System.out.println(
@@ -65,6 +98,125 @@ public class PacienteService {
             );
 
             actual = actual.getSiguiente();
+        }
+    }
+
+    public void guardarPacientes() {
+
+        File carpeta = new File("data");
+
+        if (!carpeta.exists() && !carpeta.mkdirs()) {
+            System.out.println(
+                    "No fue posible crear la carpeta data.");
+            return;
+        }
+
+        try (BufferedWriter escritor = new BufferedWriter(
+                new FileWriter(RUTA_ARCHIVO))) {
+
+            Nodo<Paciente> actual = pacientes.getHead();
+
+            while (actual != null) {
+
+                Paciente paciente = actual.getDato();
+
+                String linea =
+                        paciente.getIdentificacion() + ";"
+                        + paciente.getNombre() + ";"
+                        + paciente.getTelefono() + ";"
+                        + paciente.getDireccion();
+
+                escritor.write(linea);
+                escritor.newLine();
+
+                actual = actual.getSiguiente();
+            }
+
+        } catch (FileNotFoundException e) {
+
+            System.out.println(
+                    "No se encontró el archivo de pacientes.");
+
+        } catch (IOException e) {
+
+            System.out.println(
+                    "Error al guardar los pacientes: "
+                    + e.getMessage());
+        }
+    }
+
+    public void cargarPacientes() {
+
+        pacientes = new ListaSimple<>();
+
+        File archivo = new File(RUTA_ARCHIVO);
+
+        if (!archivo.exists()) {
+            return;
+        }
+
+        try (BufferedReader lector = new BufferedReader(
+                new FileReader(archivo))) {
+
+            String linea;
+
+            while ((linea = lector.readLine()) != null) {
+
+                String[] datos = linea.split(";", -1);
+
+                if (datos.length != 4) {
+                    System.out.println(
+                            "Se omitió un registro de paciente incorrecto.");
+                    continue;
+                }
+
+                try {
+
+                    String identificacion = datos[0].trim();
+                    String nombre = datos[1].trim();
+                    String telefono = datos[2].trim();
+                    String direccion = datos[3].trim();
+
+                    if (identificacion.isEmpty()
+                            || nombre.isEmpty()
+                            || telefono.isEmpty()) {
+
+                        System.out.println(
+                                "Se omitió un paciente con datos incompletos.");
+                        continue;
+                    }
+
+                    if (buscarPorIdentificacion(identificacion) != null) {
+                        continue;
+                    }
+
+                    Paciente paciente = new Paciente(
+                            identificacion,
+                            nombre,
+                            telefono
+                    );
+
+                    paciente.setDireccion(direccion);
+
+                    pacientes.insertarFinal(paciente);
+
+                } catch (IllegalArgumentException e) {
+
+                    System.out.println(
+                            "Se omitió un paciente con datos inválidos.");
+                }
+            }
+
+        } catch (FileNotFoundException e) {
+
+            System.out.println(
+                    "No se encontró el archivo de pacientes.");
+
+        } catch (IOException e) {
+
+            System.out.println(
+                    "Error al cargar los pacientes: "
+                    + e.getMessage());
         }
     }
 
@@ -100,7 +252,7 @@ public class PacienteService {
 
         return consulta;
     }
-    
+
     public Consulta deshacerUltimaConsulta(
             String identificacionPaciente) {
 
@@ -183,6 +335,7 @@ public class PacienteService {
         int numero = 1;
 
         while (!pila.isEmpty()) {
+
             Consulta consulta = pila.pop();
 
             resultado.append("Consulta ")
@@ -229,6 +382,7 @@ public class PacienteService {
         int i = 1;
 
         while (actual != null) {
+
             System.out.println("\nConsulta " + i);
             System.out.println(actual.getDato());
 
@@ -252,6 +406,7 @@ public class PacienteService {
                 paciente.getHistorialClinico().getHead();
 
         while (actual != null) {
+
             Consulta consulta = actual.getDato();
 
             if (consulta.getFecha().equals(fecha)) {
@@ -262,9 +417,8 @@ public class PacienteService {
         }
 
         return null;
-        }
+    }
 
-    
     public boolean eliminarConsulta(
             String identificacionPaciente,
             LocalDate fecha) {
@@ -297,6 +451,7 @@ public class PacienteService {
             Pila<Consulta> auxiliar = new Pila<>();
 
             while (!pila.isEmpty()) {
+
                 Consulta actual = pila.pop();
 
                 if (actual != consulta) {
@@ -311,6 +466,7 @@ public class PacienteService {
             System.out.println(
                     "Consulta eliminada exitosamente."
             );
+
             return true;
         }
 
@@ -319,57 +475,80 @@ public class PacienteService {
     }
 
     public String listarEnEspera() {
-        Cola<Paciente> fila = salaDeEspera.getFila();
 
+        Cola<Paciente> fila = salaDeEspera.getFila();
 
         if (fila.isEmpty()) {
             return "No hay pacientes en espera.";
         }
 
-        StringBuilder sb = new StringBuilder("--- PACIENTES EN ESPERA ---");
+        StringBuilder sb =
+                new StringBuilder("--- PACIENTES EN ESPERA ---");
+
         int total = fila.size();
 
         for (int i = 1; i <= total; i++) {
+
             Paciente paciente = fila.dequeue();
-            sb.append("\n").append(i).append(". ")
-              .append(paciente.getNombre())
-              .append(" (ID: ").append(paciente.getIdentificacion()).append(")");
-            fila.enqueue(paciente); 
+
+            sb.append("\n")
+                    .append(i)
+                    .append(". ")
+                    .append(paciente.getNombre())
+                    .append(" (ID: ")
+                    .append(paciente.getIdentificacion())
+                    .append(")");
+
+            fila.enqueue(paciente);
         }
+
         return sb.toString();
     }
 
     public void registrarLLegada(String identificacion) {
-    Paciente paciente = buscarPorIdentificacion(identificacion);
-    
-    if (paciente != null) {
-        salaDeEspera.getFila().enqueue(paciente);
-    }
-}
 
-    public Paciente atenderSiguiente(){
-        Paciente paciente =  salaDeEspera.getFila().dequeue();
+        Paciente paciente =
+                buscarPorIdentificacion(identificacion);
+
+        if (paciente != null) {
+            salaDeEspera.getFila().enqueue(paciente);
+        }
+    }
+
+    public Paciente atenderSiguiente() {
+
+        Paciente paciente =
+                salaDeEspera.getFila().dequeue();
+
         return paciente;
     }
 
-    public Paciente consultarSiguiente(){
-        Paciente paciente = salaDeEspera.getFila().front();
+    public Paciente consultarSiguiente() {
+
+        Paciente paciente =
+                salaDeEspera.getFila().front();
+
         return paciente;
     }
 
-    public boolean sinClientesEnEspera(){
+    public boolean sinClientesEnEspera() {
         return salaDeEspera.getFila().isEmpty();
     }
 
-    public int contarEnEspera(){
+    public int contarEnEspera() {
         return salaDeEspera.getFila().size();
     }
 
-    private Paciente buscarPacienteOFallar(String identificacion){
-        Paciente paciente = buscarPorIdentificacion(identificacion);
+    private Paciente buscarPaciente(String identificacion) {
+
+        Paciente paciente =
+                buscarPorIdentificacion(identificacion);
+
         if (paciente == null) {
-            throw new IllegalArgumentException( "Paciente no encontrado.");
+            throw new IllegalArgumentException(
+                    "Paciente no encontrado.");
         }
+
         return paciente;
     }
 
@@ -378,10 +557,15 @@ public class PacienteService {
             String nuevoNombre) {
 
         if (paciente != null) {
+
             paciente.setNombre(nuevoNombre);
+
+            guardarPacientes();
+
             System.out.println(
                     "Nombre del paciente actualizado exitosamente."
             );
+
         } else {
             System.out.println("Paciente no encontrado.");
         }
@@ -392,10 +576,15 @@ public class PacienteService {
             String nuevoTelefono) {
 
         if (paciente != null) {
+
             paciente.setTelefono(nuevoTelefono);
+
+            guardarPacientes();
+
             System.out.println(
                     "Telefono del paciente actualizado exitosamente."
             );
+
         } else {
             System.out.println("Paciente no encontrado.");
         }
@@ -406,10 +595,15 @@ public class PacienteService {
             String nuevaDireccion) {
 
         if (paciente != null) {
+
             paciente.setDireccion(nuevaDireccion);
+
+            guardarPacientes();
+
             System.out.println(
                     "Direccion del paciente actualizada exitosamente."
             );
+
         } else {
             System.out.println("Paciente no encontrado.");
         }
@@ -418,12 +612,17 @@ public class PacienteService {
     public boolean eliminarPaciente(Paciente paciente) {
 
         if (paciente != null) {
+
             boolean eliminado = pacientes.eliminar(paciente);
 
             if (eliminado) {
+
+                guardarPacientes();
+
                 System.out.println(
                         "Paciente eliminado exitosamente."
                 );
+
                 return true;
             }
 

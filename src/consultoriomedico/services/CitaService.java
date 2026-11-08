@@ -110,28 +110,18 @@ public class CitaService {
             return false;
         }
 
-        Cita registrada = buscarPorPacienteYFecha(
-                cita.getPaciente(),
-                cita.getFecha()
-        );
-
-        if (registrada != cita) {
-            System.out.println(
-                    "La cita no está registrada en el sistema.");
-            return false;
-        }
-
         boolean eliminada = citas.eliminarPorValor(cita);
 
         if (!eliminada) {
-            System.out.println("Error al eliminar la cita.");
+            System.out.println(
+                    "La cita no está registrada en el sistema.");
             return false;
         }
 
         System.out.println("Cita eliminada exitosamente.");
         return true;
     }
-    
+
     public boolean tieneCitasMedico(Medico medico) {
         if (medico == null) {
             return false;
@@ -148,5 +138,10 @@ public class CitaService {
         }
 
         return false;
+    }
+    public void limpiarCitas() {
+        while (!citas.estaVacia()) {
+            citas.eliminarInicio();
+        }
     }
 }
