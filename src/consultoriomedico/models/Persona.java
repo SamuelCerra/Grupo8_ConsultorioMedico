@@ -6,12 +6,9 @@ public abstract class Persona implements RolClinico {
     private String telefono;
 
     public Persona(String identificacion, String nombre, String telefono) {
-        if (identificacion == null || identificacion.isBlank()) {
-            throw new IllegalArgumentException("La identificación no puede ser nula ni vacía");
-        }
-        this.identificacion = identificacion;
-        this.nombre = nombre;
-        this.telefono = telefono;
+        setIdentificacion(identificacion);
+        setNombre(nombre);
+        setTelefono(telefono);
     }
 
     @Override
@@ -26,7 +23,10 @@ public abstract class Persona implements RolClinico {
     }
 
     public void setIdentificacion(String identificacion) {
-        this.identificacion = identificacion;
+        if (identificacion == null || identificacion.isBlank()) {
+            throw new IllegalArgumentException("La identificación no puede ser nula ni vacía");
+        }
+        this.identificacion = identificacion.trim();
     }
 
     public String getNombre() {
@@ -34,7 +34,10 @@ public abstract class Persona implements RolClinico {
     }
 
     public void setNombre(String nombre) {
-        this.nombre = nombre;
+        if (nombre == null || nombre.isBlank()) {
+            throw new IllegalArgumentException("El nombre no puede ser nulo ni vacío");
+        }
+        this.nombre = nombre.trim();
     }
 
     public String getTelefono() {
@@ -42,6 +45,9 @@ public abstract class Persona implements RolClinico {
     }
 
     public void setTelefono(String telefono) {
-        this.telefono = telefono;
+        if (telefono == null || telefono.isBlank()) {
+            throw new IllegalArgumentException("El teléfono no puede ser nulo ni vacío");
+        }
+        this.telefono = telefono.trim();
     }
 }

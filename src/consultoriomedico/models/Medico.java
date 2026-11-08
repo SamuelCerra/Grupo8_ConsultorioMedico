@@ -14,8 +14,8 @@ public class Medico extends Persona {
             String numeroRegistro) {
 
         super(identificacion, nombre, telefono);
-        this.especialidad = especialidad;
-        this.numeroRegistro = numeroRegistro;
+        setEspecialidad(especialidad);
+        setNumeroRegistro(numeroRegistro);
     }
 
     @Override
@@ -31,7 +31,10 @@ public class Medico extends Persona {
     }
 
     public void setEspecialidad(String especialidad) {
-        this.especialidad = especialidad;
+        if (especialidad == null || especialidad.isBlank()) {
+            throw new IllegalArgumentException("La especialidad no puede ser nula ni vacía");
+        }
+        this.especialidad = especialidad.trim();
     }
 
     public String getNumeroRegistro() {
@@ -39,6 +42,9 @@ public class Medico extends Persona {
     }
 
     public void setNumeroRegistro(String numeroRegistro) {
-        this.numeroRegistro = numeroRegistro;
+        if (numeroRegistro == null || numeroRegistro.isBlank()) {
+            throw new IllegalArgumentException("El número de registro no puede ser nulo ni vacío");
+        }
+        this.numeroRegistro = numeroRegistro.trim();
     }
 }

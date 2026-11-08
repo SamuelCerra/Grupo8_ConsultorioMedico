@@ -1,6 +1,7 @@
 package consultoriomedico.models;
 
 import java.time.LocalDate;
+import java.util.Objects;
 
 public class Cita {
     private LocalDate fecha;
@@ -11,11 +12,11 @@ public class Cita {
     private Consulta consulta;
 
     public Cita(LocalDate fecha, String hora, String motivo, Paciente paciente, Medico medico) {
-        this.fecha = fecha;
-        this.hora = hora;
-        this.motivo = motivo;
-        this.paciente = paciente;
-        this.medico = medico;
+        setFecha(fecha);
+        setHora(hora);
+        setMotivo(motivo);
+        setPaciente(paciente);
+        setMedico(medico);
     }
 
     public LocalDate getFecha() {
@@ -23,6 +24,9 @@ public class Cita {
     }
 
     public void setFecha(LocalDate fecha) {
+        if (fecha == null) {
+            throw new IllegalArgumentException("La fecha de la cita no puede ser nula");
+        }
         this.fecha = fecha;
     }
 
@@ -31,7 +35,10 @@ public class Cita {
     }
 
     public void setHora(String hora) {
-        this.hora = hora;
+        if (hora == null || hora.isBlank()) {
+            throw new IllegalArgumentException("La hora de la cita no puede ser nula ni vacía");
+        }
+        this.hora = hora.trim();
     }
 
     public String getMotivo() {
@@ -39,7 +46,10 @@ public class Cita {
     }
 
     public void setMotivo(String motivo) {
-        this.motivo = motivo;
+        if (motivo == null || motivo.isBlank()) {
+            throw new IllegalArgumentException("El motivo de la cita no puede ser nulo ni vacío");
+        }
+        this.motivo = motivo.trim();
     }
 
     public Paciente getPaciente() {
@@ -47,6 +57,9 @@ public class Cita {
     }
 
     public void setPaciente(Paciente paciente) {
+        if (paciente == null) {
+            throw new IllegalArgumentException("La cita requiere un paciente válido");
+        }
         this.paciente = paciente;
     }
 
@@ -55,6 +68,9 @@ public class Cita {
     }
 
     public void setMedico(Medico medico) {
+        if (medico == null) {
+            throw new IllegalArgumentException("La cita requiere un médico válido");
+        }
         this.medico = medico;
     }
 
@@ -64,5 +80,30 @@ public class Cita {
 
     public void setConsulta(Consulta consulta) {
         this.consulta = consulta;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+        Cita otra = (Cita) obj;
+        return Objects.equals(fecha, otra.fecha)
+                && Objects.equals(hora, otra.hora)
+                && Objects.equals(motivo, otra.motivo)
+                && Objects.equals(paciente != null ? paciente.getIdentificacion() : null,
+                        otra.paciente != null ? otra.paciente.getIdentificacion() : null)
+                && Objects.equals(medico != null ? medico.getIdentificacion() : null,
+                        otra.medico != null ? otra.medico.getIdentificacion() : null);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(fecha, hora, motivo,
+                paciente != null ? paciente.getIdentificacion() : null,
+                medico != null ? medico.getIdentificacion() : null);
     }
 }
