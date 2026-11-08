@@ -4,34 +4,49 @@ package consultoriomedico.view;
 import consultoriomedico.models.Cita;
 import consultoriomedico.models.Medico;
 import consultoriomedico.models.Paciente;
+import consultoriomedico.services.AgendaService;
 import consultoriomedico.services.CitaService;
 import consultoriomedico.services.MedicoService;
 import consultoriomedico.services.PacienteService;
 import consultoriomedico.utils.ConsoleUtils;
+
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 
 public class MenuView {
 
-    
-        private final PacienteService pacienteService =
-                new PacienteService();
+    private final PacienteService pacienteService =
+            new PacienteService();
 
-        private final CitaService citaService =
-                new CitaService();
+    private final CitaService citaService =
+            new CitaService();
 
-        private final MedicoService medicoService =
-                new MedicoService(citaService);
+    private final MedicoService medicoService =
+            new MedicoService(citaService);
 
-        private final MenuPilaView menuPilaView =
-        new MenuPilaView(pacienteService);
+    private final AgendaService agendaService =
+            new AgendaService(
+                    pacienteService,
+                    medicoService,
+                    citaService
+            );
 
- 
+    private final MenuAgendaView menuAgendaView =
+            new MenuAgendaView(agendaService);
+
+    private final MenuPilaView menuPilaView =
+            new MenuPilaView(pacienteService);
+
+    // =========================
+    // MENU PRINCIPAL
+    // =========================
+
     public void iniciar() {
         int opcion;
 
         do {
             mostrarMenuPrincipal();
+
             opcion = ConsoleUtils.leerEntero(
                     "Seleccione una opcion: ");
 
@@ -42,9 +57,11 @@ public class MenuView {
                 case 4 -> menuConsulta();
                 case 5 -> menuPilaView.iniciar();
                 case 6 -> {
-                    MenuColaView menuCola = new MenuColaView(pacienteService);
+                    MenuColaView menuCola =
+                            new MenuColaView(pacienteService);
                     menuCola.iniciar();
                 }
+                case 7 -> menuAgendaView.iniciar();
                 case 0 -> System.out.println(
                         "Saliendo del sistema...");
                 default -> System.out.println(
@@ -64,8 +81,9 @@ public class MenuView {
         System.out.println("4. Consultas");
         System.out.println("5. Historial de consultas");
         System.out.println("6. Sala de espera");
+        System.out.println("7. Gestion de agenda");
         System.out.println("0. Salir");
-        }
+    }
 
     // =========================
     // MENU PACIENTES
@@ -221,7 +239,6 @@ public class MenuView {
             System.out.println("\n--- CITAS ---");
             System.out.println("1. Crear cita");
             System.out.println("2. Listar citas");
-            System.out.println("3. Eliminar cita");
             System.out.println("0. Volver");
 
             opcion = ConsoleUtils.leerEntero(
@@ -230,7 +247,6 @@ public class MenuView {
             switch (opcion) {
                 case 1 -> crearCita();
                 case 2 -> citaService.recorrerLista();
-                case 3 -> eliminarCita();
                 case 0 -> System.out.println(
                         "Volviendo al menu principal...");
                 default -> System.out.println("Opcion invalida.");
@@ -458,64 +474,22 @@ public class MenuView {
                     ConsoleUtils.leerTexto("Motivo de la cita: ");
 
             Cita cita = citaService.crearCita(
-                    fecha,
-                    hora,
-                    motivo,
-                    paciente,
-                    medico
-            );
+                fecha,
+                hora,
+                motivo,
+                paciente,
+                medico
+                );
 
-            System.out.println(
-                    "Cita creada exitosamente para "
-                    + cita.getPaciente().getNombre());
+                String resultado = agendaService.registrarCita(cita);
+
+                System.out.println(resultado);
 
         } catch (DateTimeParseException e) {
             System.out.println(
                     "Error: la fecha debe tener el formato AAAA-MM-DD.");
         } catch (IllegalArgumentException e) {
             System.out.println("Error: " + e.getMessage());
-        }
-    }
-
-    // =========================
-    // ELIMINAR CITA
-    // =========================
-
-    private void eliminarCita() {
-        String identificacionPaciente =
-                ConsoleUtils.leerTexto(
-                        "Identificacion del paciente: ");
-
-        Paciente paciente =
-                pacienteService.buscarPorIdentificacion(
-                        identificacionPaciente);
-
-        if (paciente == null) {
-            System.out.println("Paciente no encontrado.");
-            return;
-        }
-
-        try {
-            LocalDate fecha =
-                    LocalDate.parse(
-                            ConsoleUtils.leerTexto(
-                                    "Fecha de la cita (AAAA-MM-DD): "));
-
-            Cita cita =
-                    citaService.buscarPorPacienteYFecha(
-                            paciente,
-                            fecha);
-
-            if (cita == null) {
-                System.out.println("Cita no encontrada.");
-                return;
-            }
-
-            citaService.eliminarCita(cita);
-
-        } catch (DateTimeParseException e) {
-            System.out.println(
-                    "Error: la fecha debe tener el formato AAAA-MM-DD.");
         }
     }
 
@@ -595,9 +569,4 @@ public class MenuView {
                     "Error: la fecha debe tener el formato AAAA-MM-DD.");
         }
     }
-    
-    // =========================
-    // MENU HISTORIAL DE CONSULTAS
-    // =========================
-
 }
