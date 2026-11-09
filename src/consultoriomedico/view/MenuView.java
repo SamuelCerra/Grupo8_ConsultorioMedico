@@ -1,4 +1,3 @@
-
 package consultoriomedico.view;
 
 import consultoriomedico.models.Cita;
@@ -42,6 +41,10 @@ public class MenuView {
     // =========================
 
     public void iniciar() {
+
+        // Cargar las citas guardadas al iniciar el sistema.
+        System.out.println(agendaService.cargarAgendas());
+
         int opcion;
 
         do {
@@ -474,16 +477,16 @@ public class MenuView {
                     ConsoleUtils.leerTexto("Motivo de la cita: ");
 
             Cita cita = citaService.crearCita(
-                fecha,
-                hora,
-                motivo,
-                paciente,
-                medico
-                );
+                    fecha,
+                    hora,
+                    motivo,
+                    paciente,
+                    medico
+            );
 
-                String resultado = agendaService.registrarCita(cita);
+            String resultado = agendaService.registrarCita(cita);
 
-                System.out.println(resultado);
+            System.out.println(resultado);
 
         } catch (DateTimeParseException e) {
             System.out.println(
